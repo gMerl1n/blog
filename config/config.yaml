@@ -1,5 +1,6 @@
 
 server:
-  port: "9001"
+  port: "9004"
   read_timeout: 60 # in seconds
   write_timeout: 60 # in seconds
+  log_level: 4 # Num 4 is INFO level
