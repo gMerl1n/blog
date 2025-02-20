@@ -1,0 +1,17 @@
+
+services:
+
+  db_auth:
+    image: postgres:latest
+    container_name: db_auth
+    volumes:
+      - data:/var/lib/postgresql/data/
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "7222:5432"
+ 
+volumes:
+  data:
+
