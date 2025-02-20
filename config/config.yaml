@@ -1,0 +1,5 @@
+
+server:
+  post: "9001"
+  read_timeout: 60 # in seconds
+  write_timeout: 60 # in seconds
