@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/viper"
@@ -8,6 +9,7 @@ import (
 
 type ConfigServer struct {
 	Port         string
+	LogLevel     int
 	ReadTimeOut  int
 	WriteTimeOut int
 }
@@ -26,10 +28,17 @@ type Config struct {
 	ConfigDB     *ConfigDB
 }
 
-func NewConfig() *Config {
+func NewConfig() (*Config, error) {
+
+	if err := fetchConfig(); err != nil {
+		fmt.Printf("error initialization config %s", err.Error())
+		return nil, err
+	}
+
 	return &Config{
 		&ConfigServer{
 			Port:         viper.GetString("server.port"),
+			LogLevel:     viper.GetInt("server.log_level"),
 			ReadTimeOut:  viper.GetInt("server.read_timeout"),
 			WriteTimeOut: viper.GetInt("server.write_timeout"),
 		},
@@ -41,5 +50,14 @@ func NewConfig() *Config {
 			Port:     os.Getenv("POSTGRES_PORT"),
 			SSLMode:  os.Getenv("SSLMODE"),
 		},
-	}
+	}, nil
+}
+
+func fetchConfig() error {
+
+	viper.AddConfigPath("config")
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	return viper.ReadInConfig()
+
 }
