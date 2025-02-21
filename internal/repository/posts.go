@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
 
+	er "github.com/gMerl1n/blog/internal/apperrors"
 	"github.com/gMerl1n/blog/internal/domain"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
@@ -42,7 +44,12 @@ func (r *RepositoryPost) CreatePost(ctx context.Context, title, body string) (in
 		title,
 		body,
 	).Scan(&postID); err != nil {
-		return 0, err
+		if strings.Contains(err.Error(), "duplicate key") {
+			return 0, er.PostIsAlready.SetCause(fmt.Sprintf("Cause: %s", err))
+		} else {
+			return 0, er.IncorrectRequestParams.SetCause(fmt.Sprintf("Cause: %s", err))
+		}
+
 	}
 
 	return postID, nil
@@ -53,17 +60,16 @@ func (r *RepositoryPost) GetPostByID(ctx context.Context, postID int) (*domain.P
 
 	var post domain.Post
 
-	query := `SELECT p.id, u.name, p.title, p.body, p.updatet_at, p.created_at 
-		 	  FROM posts AS p
-		 	  JOIN users AS u ON p.user_id = u.id
+	query := `SELECT *
+		 	  FROM posts
 		 	  WHERE id = $1`
 
 	if err := r.db.QueryRow(
 		ctx,
 		query,
 		postID,
-	).Scan(&post.ID, &post.Author, &post.Title, &post.Body, &post.UpdatedAt, &post.CreatedAt); err != nil {
-		return nil, err
+	).Scan(&post.ID, &post.Title, &post.Body, &post.UpdatedAt, &post.CreatedAt); err != nil {
+		return nil, er.IncorrectRequest.SetCause(fmt.Sprintf("Cause: %s", err))
 	}
 
 	return &post, nil
