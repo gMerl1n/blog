@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
+	er "github.com/gMerl1n/blog/internal/apperrors"
 	"github.com/gin-gonic/gin"
 )
 
 type CreatePostRequest struct {
-	UserID int
-	Title  string
-	Body   string
+	Title string `json:"title"`
+	Body  string `json:"body"`
 }
 
 func (h *Handler) CreatePost(ctx *gin.Context) {
@@ -19,14 +19,15 @@ func (h *Handler) CreatePost(ctx *gin.Context) {
 	var input CreatePostRequest
 
 	if err := ctx.BindJSON(&input); err != nil {
+		h.logger.Warn(fmt.Sprintf("failed to decode post request data. Error: %s", err))
+		er.BadResponse(ctx, er.IncorrectRequestParams.SetCause(err.Error()))
 		return
 	}
-
-	h.logger.Info(fmt.Sprintf("creating post by user %d", input.UserID))
 
 	postID, err := h.Services.ServicePost.CreatePost(ctx, input.Title, input.Body)
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to create user. Error: %s ", err))
+		er.BadResponse(ctx, err)
 		return
 	}
 
@@ -43,12 +44,14 @@ func (h *Handler) GetPostByID(ctx *gin.Context) {
 	postID, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to get post id from query params %s ", err))
+		er.BadResponse(ctx, er.IncorrectRequestParams.SetCause(err.Error()))
 		return
 	}
 
 	post, err := h.Services.ServicePost.GetPostByID(ctx, postID)
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to get post from db %s ", err))
+		er.BadResponse(ctx, err)
 		return
 	}
 

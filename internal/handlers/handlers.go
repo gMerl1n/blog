@@ -36,8 +36,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		posts := api.Group("/posts")
 		{
-			posts.POST("/")
-			posts.GET("/:id")
+			posts.POST("/create", h.CreatePost)
+			posts.GET("/:id", h.GetPostByID)
 		}
 	}
 
