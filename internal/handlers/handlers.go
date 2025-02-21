@@ -5,14 +5,19 @@ import (
 
 	"github.com/gMerl1n/blog/internal/services"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
 	Services *services.Service
+	logger   *logrus.Logger
 }
 
-func NewHandler(service *services.Service) Handler {
-	return Handler{Services: service}
+func NewHandler(service *services.Service, logger *logrus.Logger) Handler {
+	return Handler{
+		Services: service,
+		logger:   logger,
+	}
 }
 
 func (h *Handler) TestHandler(ctx *gin.Context) {

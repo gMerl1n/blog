@@ -5,6 +5,7 @@ import (
 
 	"github.com/gMerl1n/blog/internal/domain"
 	"github.com/gMerl1n/blog/internal/repository"
+	"github.com/sirupsen/logrus"
 )
 
 type IServicePost interface {
@@ -16,8 +17,8 @@ type Service struct {
 	ServicePost IServicePost
 }
 
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo *repository.Repository, logger *logrus.Logger) *Service {
 	return &Service{
-		ServicePost: NewServicePost(repo.RepoPost),
+		ServicePost: NewServicePost(repo.RepoPost, logger),
 	}
 }

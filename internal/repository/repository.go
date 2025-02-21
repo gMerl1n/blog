@@ -5,6 +5,7 @@ import (
 
 	"github.com/gMerl1n/blog/internal/domain"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/sirupsen/logrus"
 )
 
 type IRepositoryPost interface {
@@ -16,8 +17,8 @@ type Repository struct {
 	RepoPost IRepositoryPost
 }
 
-func NewRepository(db *pgxpool.Pool) *Repository {
+func NewRepository(db *pgxpool.Pool, logger *logrus.Logger) *Repository {
 	return &Repository{
-		RepoPost: NewRepositoryPost(db),
+		RepoPost: NewRepositoryPost(db, logger),
 	}
 }

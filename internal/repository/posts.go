@@ -6,6 +6,7 @@ import (
 
 	"github.com/gMerl1n/blog/internal/domain"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -13,11 +14,15 @@ const (
 )
 
 type RepositoryPost struct {
-	db *pgxpool.Pool
+	db     *pgxpool.Pool
+	logger *logrus.Logger
 }
 
-func NewRepositoryPost(db *pgxpool.Pool) *RepositoryPost {
-	return &RepositoryPost{db: db}
+func NewRepositoryPost(db *pgxpool.Pool, logger *logrus.Logger) *RepositoryPost {
+	return &RepositoryPost{
+		db:     db,
+		logger: logger,
+	}
 }
 
 func (r *RepositoryPost) CreatePost(ctx context.Context, title, body string) (int, error) {
@@ -37,7 +42,6 @@ func (r *RepositoryPost) CreatePost(ctx context.Context, title, body string) (in
 		title,
 		body,
 	).Scan(&postID); err != nil {
-		fmt.Println(err.Error())
 		return 0, err
 	}
 
@@ -59,7 +63,6 @@ func (r *RepositoryPost) GetPostByID(ctx context.Context, postID int) (*domain.P
 		query,
 		postID,
 	).Scan(&post.ID, &post.Author, &post.Title, &post.Body, &post.UpdatedAt, &post.CreatedAt); err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 
