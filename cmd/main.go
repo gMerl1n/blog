@@ -37,11 +37,10 @@ func main() {
 	if err != nil {
 
 	}
-	logger.Info("Hello")
-	logger.Debug("Hello")
-	repos := repository.NewRepository(db)
-	services := services.NewService(repos)
-	handlers := handlers.NewHandler(services)
+
+	repos := repository.NewRepository(db, logger)
+	services := services.NewService(repos, logger)
+	handlers := handlers.NewHandler(services, logger)
 
 	srv := server.NewServer(config.ConfigServer, handlers)
 
