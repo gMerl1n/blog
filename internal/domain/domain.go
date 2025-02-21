@@ -4,7 +4,7 @@ import "time"
 
 type Post struct {
 	ID        int
-	UserID    int
+	Author    string
 	Title     string
 	Body      string
 	UpdatedAt time.Time
