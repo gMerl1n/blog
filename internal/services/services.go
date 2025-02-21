@@ -1,13 +1,15 @@
 package services
 
 import (
+	"context"
+
 	"github.com/gMerl1n/blog/internal/domain"
 	"github.com/gMerl1n/blog/internal/repository"
 )
 
 type IServicePost interface {
-	CreatePost(title, body string) (int, error)
-	GetPostByID(postID int) (*domain.Post, error)
+	CreatePost(ctx context.Context, title, body string) (int, error)
+	GetPostByID(ctx context.Context, postID int) (*domain.Post, error)
 }
 
 type Service struct {
