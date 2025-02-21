@@ -15,8 +15,8 @@ func NewHandler(service *services.Service) Handler {
 	return Handler{Services: service}
 }
 
-func (h *Handler) TestHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, "Ok")
+func (h *Handler) TestHandler(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, "Ok")
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {

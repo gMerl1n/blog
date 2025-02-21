@@ -13,35 +13,35 @@ type CreatePostRequest struct {
 	Body   string
 }
 
-func (h *Handler) CreatePost(c *gin.Context) {
+func (h *Handler) CreatePost(ctx *gin.Context) {
 
 	var input CreatePostRequest
 
-	if err := c.BindJSON(&input); err != nil {
+	if err := ctx.BindJSON(&input); err != nil {
 		return
 	}
 
-	postID, err := h.Services.ServicePost.CreatePost(input.Title, input.Body)
+	postID, err := h.Services.ServicePost.CreatePost(ctx, input.Title, input.Body)
 	if err != nil {
 		return
 	}
 
-	c.JSON(http.StatusOK, postID)
+	ctx.JSON(http.StatusOK, postID)
 
 }
 
-func (h *Handler) GetPostByID(c *gin.Context) {
+func (h *Handler) GetPostByID(ctx *gin.Context) {
 
-	postID, err := strconv.Atoi(c.Param("id"))
+	postID, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		return
 	}
 
-	post, err := h.Services.ServicePost.GetPostByID(postID)
+	post, err := h.Services.ServicePost.GetPostByID(ctx, postID)
 	if err != nil {
 		return
 	}
 
-	c.JSON(http.StatusCreated, post)
+	ctx.JSON(http.StatusCreated, post)
 
 }
