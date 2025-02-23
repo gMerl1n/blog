@@ -37,3 +37,12 @@ func (s *ServicePost) GetPostByID(ctx context.Context, postID int) (*domain.Post
 
 	return post, err
 }
+
+func (s *ServicePost) GetPosts(ctx context.Context) ([]*domain.Post, error) {
+	listPosts, err := s.repoPost.GetPosts(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return listPosts, nil
+}

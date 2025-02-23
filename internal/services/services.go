@@ -11,6 +11,7 @@ import (
 type IServicePost interface {
 	CreatePost(ctx context.Context, title, body string) (int, error)
 	GetPostByID(ctx context.Context, postID int) (*domain.Post, error)
+	GetPosts(ctx context.Context) ([]*domain.Post, error)
 }
 
 type Service struct {
