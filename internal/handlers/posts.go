@@ -60,3 +60,18 @@ func (h *Handler) GetPostByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, post)
 
 }
+
+func (h *Handler) GetPosts(ctx *gin.Context) {
+
+	h.logger.Info("getting list of posts")
+
+	listPosts, err := h.Services.ServicePost.GetPosts(ctx)
+	if err != nil {
+		h.logger.Warn(fmt.Sprintf("failed to get all posts: %s", err))
+		er.BadResponse(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, listPosts)
+
+}
