@@ -74,3 +74,37 @@ func (r *RepositoryPost) GetPostByID(ctx context.Context, postID int) (*domain.P
 
 	return &post, nil
 }
+
+func (r *RepositoryPost) GetPosts(ctx context.Context) ([]*domain.Post, error) {
+
+	listPosts := make([]*domain.Post, 0)
+
+	query := `SELECT * 
+			  FROM posts`
+
+	rowsCargos, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, er.IncorrectRequestParams.SetCause(fmt.Sprintf("Cause: %s", err))
+	}
+
+	for rowsCargos.Next() {
+
+		var post domain.Post
+
+		if err := rowsCargos.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Body,
+			&post.UpdatedAt,
+			&post.CreatedAt,
+		); err != nil {
+			return nil, er.IncorrectData.SetCause(fmt.Sprintf("Cause: %s", err))
+		}
+
+		listPosts = append(listPosts, &post)
+
+	}
+
+	return listPosts, nil
+
+}
