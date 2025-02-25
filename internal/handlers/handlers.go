@@ -39,6 +39,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			posts.POST("/", h.CreatePost)
 			posts.GET("/:id", h.GetPostByID)
 			posts.GET("/", h.GetPosts)
+			posts.PATCH("/", h.UpdatePost)
 		}
 	}
 

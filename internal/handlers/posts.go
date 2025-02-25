@@ -6,17 +6,13 @@ import (
 	"strconv"
 
 	er "github.com/gMerl1n/blog/internal/apperrors"
+	"github.com/gMerl1n/blog/internal/entities/requests"
 	"github.com/gin-gonic/gin"
 )
 
-type CreatePostRequest struct {
-	Title string `json:"title"`
-	Body  string `json:"body"`
-}
-
 func (h *Handler) CreatePost(ctx *gin.Context) {
 
-	var input CreatePostRequest
+	var input requests.CreatePostRequest
 
 	if err := ctx.BindJSON(&input); err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to decode post request data. Error: %s", err))
@@ -73,5 +69,28 @@ func (h *Handler) GetPosts(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, listPosts)
+
+}
+
+func (h *Handler) UpdatePost(ctx *gin.Context) {
+
+	h.logger.Info("Updating post")
+
+	var input requests.UpdatePostRequest
+
+	if err := ctx.BindJSON(&input); err != nil {
+		h.logger.Warn(fmt.Sprintf("failed to decode post request data. Error: %s", err))
+		er.BadResponse(ctx, er.IncorrectRequestParams.SetCause(err.Error()))
+		return
+	}
+
+	postUpdatedID, err := h.Services.ServicePost.UpdatePost(ctx, input)
+	if err != nil {
+		h.logger.Warn(fmt.Sprintf("failed to decode post request data. Error: %s", err))
+		er.BadResponse(ctx, er.IncorrectRequestParams.SetCause(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, postUpdatedID)
 
 }
