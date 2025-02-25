@@ -3,10 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 
 	er "github.com/gMerl1n/blog/internal/apperrors"
-	"github.com/gMerl1n/blog/internal/domain"
+	"github.com/gMerl1n/blog/internal/entities/domain"
+	"github.com/gMerl1n/blog/internal/entities/requests"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 )
@@ -107,4 +109,71 @@ func (r *RepositoryPost) GetPosts(ctx context.Context) ([]*domain.Post, error) {
 
 	return listPosts, nil
 
+}
+
+func (r *RepositoryPost) UpdatePostByID(ctx context.Context, data requests.UpdatePostRequest) (int, error) {
+
+	var postUpdatedID int
+
+	dataToUpdate := convertToSQLPatches(data)
+	columnsToUpdate := strings.Join(dataToUpdate.Fields[1:], ", ")
+
+	postToUpdateID := dataToUpdate.Args[0]
+	argsToUpdate := dataToUpdate.Args[1:]
+
+	query := fmt.Sprintf(`UPDATE posts SET %s WHERE id=%d RETURNING id`, columnsToUpdate, postToUpdateID)
+
+	if err := r.db.QueryRow(
+		ctx,
+		query,
+		argsToUpdate...,
+	).Scan(&postUpdatedID); err != nil {
+		return 0, err
+	}
+
+	return postUpdatedID, nil
+}
+
+type SQLPatch struct {
+	Fields []string
+	Args   []interface{}
+}
+
+func convertToSQLPatches(resource interface{}) SQLPatch {
+	var sqlPatch SQLPatch
+	rType := reflect.TypeOf(resource)
+	rVal := reflect.ValueOf(resource)
+	numField := rType.NumField()
+
+	sqlPatch.Fields = make([]string, 0, numField)
+	sqlPatch.Args = make([]interface{}, 0, numField)
+
+	for i := 0; i < numField; i++ {
+		fType := rType.Field(i)
+		fVal := rVal.Field(i)
+
+		switch fVal.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			if fVal.Int() != 0 {
+
+				sqlPatch.Args = append(sqlPatch.Args, fVal.Int())
+
+				columnsToUpdate := fmt.Sprintf(strings.ToLower(fType.Name)+"=$%d", i)
+
+				sqlPatch.Fields = append(sqlPatch.Fields, columnsToUpdate)
+			}
+		case reflect.String:
+			if fVal.String() != "" {
+				sqlPatch.Args = append(sqlPatch.Args, fVal.String())
+
+				valuesToUpdate := fmt.Sprintf(strings.ToLower(fType.Name)+"=$%d", i)
+
+				sqlPatch.Fields = append(sqlPatch.Fields, valuesToUpdate)
+			}
+
+		}
+
+	}
+
+	return sqlPatch
 }
