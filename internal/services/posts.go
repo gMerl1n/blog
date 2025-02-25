@@ -3,7 +3,8 @@ package services
 import (
 	"context"
 
-	"github.com/gMerl1n/blog/internal/domain"
+	"github.com/gMerl1n/blog/internal/entities/domain"
+	"github.com/gMerl1n/blog/internal/entities/requests"
 	"github.com/gMerl1n/blog/internal/repository"
 	"github.com/sirupsen/logrus"
 )
@@ -45,4 +46,13 @@ func (s *ServicePost) GetPosts(ctx context.Context) ([]*domain.Post, error) {
 	}
 
 	return listPosts, nil
+}
+
+func (s *ServicePost) UpdatePost(ctx context.Context, dataToUpdate requests.UpdatePostRequest) (int, error) {
+	postUpdatedID, err := s.repoPost.UpdatePostByID(ctx, dataToUpdate)
+	if err != nil {
+		return 0, err
+	}
+
+	return postUpdatedID, nil
 }
