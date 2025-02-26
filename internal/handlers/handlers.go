@@ -41,6 +41,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			posts.GET("/", h.GetPosts)
 			posts.PATCH("/", h.UpdatePost)
 		}
+		users := api.Group("/users")
+		{
+			users.POST("/", h.CreateUser)
+		}
 	}
 
 	return router

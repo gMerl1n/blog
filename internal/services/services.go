@@ -16,8 +16,13 @@ type IServicePost interface {
 	UpdatePost(ctx context.Context, dataToUpdate requests.UpdatePostRequest) (int, error)
 }
 
+type IServiceUser interface {
+	CreateUser(ctx context.Context, name, email, password, repeatPassword string) (int, error)
+}
+
 type Service struct {
 	ServicePost IServicePost
+	ServiceUser IServiceUser
 }
 
 func NewService(repo *repository.Repository, logger *logrus.Logger) *Service {
