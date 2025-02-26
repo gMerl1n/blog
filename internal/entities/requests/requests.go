@@ -6,8 +6,14 @@ type CreatePostRequest struct {
 }
 
 type UpdatePostRequest struct {
-	ID        int    `json:"id"`
-	Title     string `json:"title,omitempty"`
-	Body      string `json:"body,omitempty"`
-	TitleBody string `json:"title_body,omitempty"`
+	ID    int    `json:"id"`
+	Title string `json:"title,omitempty"`
+	Body  string `json:"body,omitempty"`
+}
+
+type CreateUserRequest struct {
+	Name           string `json:"name"`
+	Email          string `json:"email"`
+	Password       string `json:"password"`
+	RepeatPassword string `json:"repeat_password"`
 }
