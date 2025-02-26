@@ -6,6 +6,7 @@ import (
 	"github.com/gMerl1n/blog/internal/entities/domain"
 	"github.com/gMerl1n/blog/internal/entities/requests"
 	"github.com/gMerl1n/blog/internal/repository"
+	"github.com/gMerl1n/blog/pkg/jwt"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,6 +18,10 @@ type IServicePost interface {
 }
 
 type IServiceUser interface {
+	CreateUser(ctx context.Context, name, email, password, repeatPassword string) (*jwt.Tokens, error)
+}
+
+type IServiceTokens interface {
 	CreateUser(ctx context.Context, name, email, password, repeatPassword string) (int, error)
 }
 
@@ -28,5 +33,6 @@ type Service struct {
 func NewService(repo *repository.Repository, logger *logrus.Logger) *Service {
 	return &Service{
 		ServicePost: NewServicePost(repo.RepoPost, logger),
+		ServiceUser: NewServiceUser(repo.RepoUser, repo.RepoTokens, logger),
 	}
 }
