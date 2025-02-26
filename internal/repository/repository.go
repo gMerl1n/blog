@@ -5,6 +5,7 @@ import (
 
 	"github.com/gMerl1n/blog/internal/entities/domain"
 	"github.com/gMerl1n/blog/internal/entities/requests"
+	"github.com/gMerl1n/blog/pkg/jwt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
 )
@@ -21,14 +22,21 @@ type IRepositoyUser interface {
 	GetUserByEmail(email string) (*domain.User, error)
 }
 
+type IRepositoryTokens interface {
+	SaveTokens(ctx context.Context, userID int, tokens *jwt.Tokens) error
+	GetTokens(ctx context.Context, refreshToken string) (*jwt.Tokens, error)
+}
+
 type Repository struct {
-	RepoPost IRepositoryPost
-	RepoUser IRepositoyUser
+	RepoPost   IRepositoryPost
+	RepoUser   IRepositoyUser
+	RepoTokens IRepositoryTokens
 }
 
 func NewRepository(db *pgxpool.Pool, logger *logrus.Logger) *Repository {
 	return &Repository{
-		RepoPost: NewRepositoryPost(db, logger),
-		RepoUser: NewRepositoryUser(db, logger),
+		RepoPost:   NewRepositoryPost(db, logger),
+		RepoUser:   NewRepositoryUser(db, logger),
+		RepoTokens: NewRepositoryTokens(db, logger),
 	}
 }
