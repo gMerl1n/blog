@@ -16,12 +16,19 @@ type IRepositoryPost interface {
 	UpdatePostByID(ctx context.Context, data requests.UpdatePostRequest) (int, error)
 }
 
+type IRepositoyUser interface {
+	CreateUser(ctx context.Context, name, email, hashPassword string) (int, error)
+	GetUserByEmail(email string) (*domain.User, error)
+}
+
 type Repository struct {
 	RepoPost IRepositoryPost
+	RepoUser IRepositoyUser
 }
 
 func NewRepository(db *pgxpool.Pool, logger *logrus.Logger) *Repository {
 	return &Repository{
 		RepoPost: NewRepositoryPost(db, logger),
+		RepoUser: NewRepositoryUser(db, logger),
 	}
 }

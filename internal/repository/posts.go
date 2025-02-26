@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 
 	er "github.com/gMerl1n/blog/internal/apperrors"
@@ -121,7 +122,7 @@ func (r *RepositoryPost) UpdatePostByID(ctx context.Context, data requests.Updat
 	postToUpdateID := dataToUpdate.Args[0]
 	argsToUpdate := dataToUpdate.Args[1:]
 
-	query := fmt.Sprintf(`UPDATE posts SET %s WHERE id=%d RETURNING id`, columnsToUpdate, postToUpdateID)
+	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id=%d RETURNING id`, postsTable, columnsToUpdate, postToUpdateID)
 
 	if err := r.db.QueryRow(
 		ctx,
@@ -166,9 +167,11 @@ func convertToSQLPatches(resource interface{}) SQLPatch {
 			if fVal.String() != "" {
 				sqlPatch.Args = append(sqlPatch.Args, fVal.String())
 
-				valuesToUpdate := fmt.Sprintf(strings.ToLower(fType.Name)+"=$%d", i)
+				snakeCaseColumn := toSnakeCase(fType.Name)
 
-				sqlPatch.Fields = append(sqlPatch.Fields, valuesToUpdate)
+				columnsToUpdate := fmt.Sprintf(snakeCaseColumn+"=$%d", i)
+
+				sqlPatch.Fields = append(sqlPatch.Fields, columnsToUpdate)
 			}
 
 		}
@@ -176,4 +179,14 @@ func convertToSQLPatches(resource interface{}) SQLPatch {
 	}
 
 	return sqlPatch
+}
+
+func toSnakeCase(str string) string {
+
+	matchFirstCap := regexp.MustCompile("(.)([A-Z][a-z]+)")
+	matchAllCap := regexp.MustCompile("([a-z0-9])([A-Z])")
+
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
 }
