@@ -7,3 +7,6 @@ create_posts:
 create_users:
 	goose -dir migrations create users sql
 
+create_tokens:
+	goose -dir migrations create tokens sql
+
