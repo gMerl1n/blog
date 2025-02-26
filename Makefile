@@ -4,3 +4,6 @@ migrate:
 create_posts:
 	goose -dir migrations create posts sql 
 
+create_users:
+	goose -dir migrations create users sql
+
