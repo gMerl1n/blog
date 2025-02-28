@@ -57,6 +57,24 @@ func (r *RepositoryUser) CreateUser(ctx context.Context, name, email, hashPasswo
 
 }
 
-func (r *RepositoryUser) GetUserByEmail(email string) (*domain.User, error) {
-	return nil, nil
+func (r *RepositoryUser) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
+
+	var user domain.User
+
+	query := fmt.Sprintf(
+		`SELECT * 
+		FROM %s 
+		WHERE email=$1`, usersTable,
+	)
+
+	if err := r.db.QueryRow(
+		ctx,
+		query,
+		email,
+	).Scan(&user.ID, &user.Name, &user.Email, &user.HashPassword, &user.UpdatedAt, &user.CreatedAt); err != nil {
+		return nil, er.IncorrectRequest.SetCause(fmt.Sprintf("Cause: %s", err))
+	}
+
+	return &user, nil
+
 }

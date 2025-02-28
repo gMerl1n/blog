@@ -19,7 +19,7 @@ type IRepositoryPost interface {
 
 type IRepositoyUser interface {
 	CreateUser(ctx context.Context, name, email, hashPassword string) (int, error)
-	GetUserByEmail(email string) (*domain.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 }
 
 type IRepositoryTokens interface {
