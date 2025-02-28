@@ -12,6 +12,12 @@ import (
 
 func (h *Handler) CreatePost(ctx *gin.Context) {
 
+	if ctx.Request.Method != http.MethodPost {
+		h.logger.Warn("http method should be post")
+		er.BadResponse(ctx, er.NotAllowed.SetCause("http method should be post"))
+		return
+	}
+
 	var input requests.CreatePostRequest
 
 	if err := ctx.BindJSON(&input); err != nil {
@@ -20,7 +26,7 @@ func (h *Handler) CreatePost(ctx *gin.Context) {
 		return
 	}
 
-	postID, err := h.Services.ServicePost.CreatePost(ctx, input.Title, input.Body)
+	postID, err := h.Services.ServicePost.CreatePost(ctx.Request.Context(), input.Title, input.Body)
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to create user. Error: %s ", err))
 		er.BadResponse(ctx, err)
@@ -34,6 +40,12 @@ func (h *Handler) CreatePost(ctx *gin.Context) {
 }
 
 func (h *Handler) GetPostByID(ctx *gin.Context) {
+
+	if ctx.Request.Method != http.MethodGet {
+		h.logger.Warn("http method should be get")
+		er.BadResponse(ctx, er.NotAllowed.SetCause("http method should be get"))
+		return
+	}
 
 	h.logger.Info("gettings post by id...")
 
@@ -59,6 +71,12 @@ func (h *Handler) GetPostByID(ctx *gin.Context) {
 
 func (h *Handler) GetPosts(ctx *gin.Context) {
 
+	if ctx.Request.Method != http.MethodPost {
+		h.logger.Warn("http method should be post")
+		er.BadResponse(ctx, er.NotAllowed.SetCause("http method should be post"))
+		return
+	}
+
 	h.logger.Info("getting list of posts")
 
 	listPosts, err := h.Services.ServicePost.GetPosts(ctx)
@@ -73,6 +91,12 @@ func (h *Handler) GetPosts(ctx *gin.Context) {
 }
 
 func (h *Handler) UpdatePost(ctx *gin.Context) {
+
+	if ctx.Request.Method != http.MethodPatch {
+		h.logger.Warn("http method should be patch")
+		er.BadResponse(ctx, er.NotAllowed.SetCause("http method should be patch"))
+		return
+	}
 
 	h.logger.Info("Updating post")
 

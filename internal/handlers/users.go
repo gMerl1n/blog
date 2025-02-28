@@ -11,6 +11,12 @@ import (
 
 func (h *Handler) CreateUser(ctx *gin.Context) {
 
+	if ctx.Request.Method != http.MethodPost {
+		h.logger.Warn("http method should be post to create user")
+		er.BadResponse(ctx, er.NotAllowed.SetCause("http method should be post to create user"))
+		return
+	}
+
 	var input requests.CreateUserRequest
 
 	if err := ctx.BindJSON(&input); err != nil {
@@ -30,6 +36,12 @@ func (h *Handler) CreateUser(ctx *gin.Context) {
 }
 
 func (h *Handler) LoginUser(ctx *gin.Context) {
+
+	if ctx.Request.Method != http.MethodPost {
+		h.logger.Warn("http method should be post to login user")
+		er.BadResponse(ctx, er.NotAllowed.SetCause("http method should be post to login user"))
+		return
+	}
 
 	var input requests.LoginUserRequest
 
