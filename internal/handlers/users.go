@@ -28,3 +28,22 @@ func (h *Handler) CreateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, userID)
 
 }
+
+func (h *Handler) LoginUser(ctx *gin.Context) {
+
+	var input requests.LoginUserRequest
+
+	if err := ctx.BindJSON(&input); err != nil {
+		h.logger.Warn(fmt.Sprintf("failed to decode login user request data. Error: %s", err))
+		er.BadResponse(ctx, er.IncorrectRequestParams.SetCause(err.Error()))
+		return
+	}
+
+	tokens, err := h.Services.ServiceUser.LoginUser(ctx, input.Email, input.Password)
+	if err != nil {
+		h.logger.Warn(fmt.Sprintf("failed to login user and get tokens %s", err))
+	}
+
+	ctx.JSON(http.StatusOK, tokens)
+
+}
