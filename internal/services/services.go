@@ -19,10 +19,7 @@ type IServicePost interface {
 
 type IServiceUser interface {
 	CreateUser(ctx context.Context, name, email, password, repeatPassword string) (*jwt.Tokens, error)
-}
-
-type IServiceTokens interface {
-	CreateUser(ctx context.Context, name, email, password, repeatPassword string) (int, error)
+	LoginUser(ctx context.Context, email, password string) (*jwt.Tokens, error)
 }
 
 type Service struct {

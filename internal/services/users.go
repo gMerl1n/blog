@@ -56,7 +56,30 @@ func (s *ServiceUser) CreateUser(ctx context.Context, name, email, password, rep
 	return tokens, nil
 }
 
-// func (s *ServiceUser) LoginUser(ctx context.Context, email, password string) (*jwt.Tokens, error)
+func (s *ServiceUser) LoginUser(ctx context.Context, email, password string) (*jwt.Tokens, error) {
+
+	user, err := s.RepoUser.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	isEqual := comparePasswords(user.HashPassword, password)
+	if !isEqual {
+		return nil, fmt.Errorf("passwords do not match")
+	}
+
+	tokens, err := s.generateTokens(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.RepoTokens.SaveTokens(ctx, user.ID, tokens); err != nil {
+		return nil, err
+	}
+
+	return tokens, nil
+
+}
 
 func (s *ServiceUser) generateTokens(userID int) (*jwt.Tokens, error) {
 	var (
