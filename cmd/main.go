@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/gMerl1n/blog/internal/config"
 	"github.com/gMerl1n/blog/internal/handlers"
@@ -38,10 +37,10 @@ func main() {
 
 	db, err := db.NewPostgresDB(context, config.ConfigDB)
 	if err != nil {
-
+		fmt.Println(err)
 	}
 
-	tokenManager, err := jwt.NewManager(config.ConfigToken.JWTsecret, time.Duration(config.ConfigToken.AccessTokenTTL), time.Duration(config.ConfigToken.RefreshTokenTTL))
+	tokenManager, err := jwt.NewManager(config.ConfigToken.JWTsecret, config.ConfigToken.OneDayInSeconds, config.ConfigToken.AccessTokenTTL, config.ConfigToken.RefreshTokenTTL)
 	if err != nil {
 		log.Fatal("Failed to init token manager")
 		fmt.Println(err)
@@ -49,7 +48,7 @@ func main() {
 
 	repos := repository.NewRepository(db, logger)
 	services := services.NewService(repos, tokenManager, logger)
-	handlers := handlers.NewHandler(services, logger)
+	handlers := handlers.NewHandler(services, tokenManager, logger)
 
 	srv := server.NewServer(config.ConfigServer, handlers)
 

@@ -25,6 +25,7 @@ type ConfigDB struct {
 
 type ConfigTokens struct {
 	JWTsecret       string
+	OneDayInSeconds int
 	AccessTokenTTL  int
 	RefreshTokenTTL int
 }
@@ -59,8 +60,9 @@ func NewConfig() (*Config, error) {
 		},
 		&ConfigTokens{
 			JWTsecret:       viper.GetString("token.jwt_secret"),
-			AccessTokenTTL:  viper.GetInt("token.access_token_TTL"),
-			RefreshTokenTTL: viper.GetInt("token.refresh_token_TTL"),
+			OneDayInSeconds: viper.GetInt("token.one_day_in_seconds"),
+			AccessTokenTTL:  viper.GetInt("token.access_tokenTTL"),
+			RefreshTokenTTL: viper.GetInt("token.refresh_tokenTTL"),
 		},
 	}, nil
 }
