@@ -13,6 +13,7 @@ type User struct {
 
 type Post struct {
 	ID        int
+	UserID    int
 	Title     string
 	Body      string
 	UpdatedAt time.Time
