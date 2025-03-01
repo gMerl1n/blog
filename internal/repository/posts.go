@@ -83,19 +83,20 @@ func (r *RepositoryPost) GetPosts(ctx context.Context) ([]*domain.Post, error) {
 	listPosts := make([]*domain.Post, 0)
 
 	query := `SELECT * 
-			  FROM posts`
+			FROM posts`
 
-	rowsCargos, err := r.db.Query(ctx, query)
+	rowsPosts, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, er.IncorrectRequestParams.SetCause(fmt.Sprintf("Cause: %s", err))
 	}
 
-	for rowsCargos.Next() {
+	for rowsPosts.Next() {
 
 		var post domain.Post
 
-		if err := rowsCargos.Scan(
+		if err := rowsPosts.Scan(
 			&post.ID,
+			&post.UserID,
 			&post.Title,
 			&post.Body,
 			&post.UpdatedAt,
@@ -109,6 +110,28 @@ func (r *RepositoryPost) GetPosts(ctx context.Context) ([]*domain.Post, error) {
 	}
 
 	return listPosts, nil
+
+}
+
+func (r *RepositoryPost) RemovePostByID(ctx context.Context, postID int) (int, error) {
+
+	var removedPostID int
+
+	query := fmt.Sprintf(
+		`DELETE FROM %s 
+		WHERE id=$1
+		RETURNING id`, postsTable,
+	)
+
+	if err := r.db.QueryRow(
+		ctx,
+		query,
+		postID,
+	).Scan(&removedPostID); err != nil {
+		return 0, er.IncorrectRequest.SetCause(fmt.Sprintf("Cause: %s", err))
+	}
+
+	return removedPostID, nil
 
 }
 

@@ -15,6 +15,7 @@ type IRepositoryPost interface {
 	GetPostByID(ctx context.Context, postID int) (*domain.Post, error)
 	GetPosts(ctx context.Context) ([]*domain.Post, error)
 	UpdatePostByID(ctx context.Context, data requests.UpdatePostRequest) (int, error)
+	RemovePostByID(ctx context.Context, postID int) (int, error)
 }
 
 type IRepositoyUser interface {
