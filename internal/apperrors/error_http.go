@@ -6,8 +6,8 @@ import (
 
 func BadResponse(ctx *gin.Context, err error) {
 
-	basicError1 := err.(*basicError)
+	basicErr := err.(*basicError)
 
-	ctx.AbortWithStatusJSON(basicError1.httpStatusCode, basicError1)
+	ctx.AbortWithStatusJSON(basicErr.httpStatusCode, basicErr)
 
 }
