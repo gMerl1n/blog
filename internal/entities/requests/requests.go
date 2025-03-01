@@ -23,11 +23,6 @@ type LoginUserRequest struct {
 	Password string `json:"password"`
 }
 
-type Tokens struct {
-	Token        string
-	RefreshToken string
-}
-
 type TokensRefreshRequest struct {
 	RefreshToken string
 }

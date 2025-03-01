@@ -28,19 +28,17 @@ func NewRepositoryTokens(db *pgxpool.Pool, logger *logrus.Logger) *RepositoryTok
 
 func (r *RepositoryTokens) SaveTokens(ctx context.Context, userID int, tokens *jwt.Tokens) error {
 
-	query := fmt.Sprintf(
-		`INSERT INTO %s (token, refresh_token)
-	 	 VALUES ($1, $2)
-	 	 RETURNING id`,
-		tokensTable,
-	)
+	var id int
+
+	query := fmt.Sprintf(`INSERT INTO %s (token, refresh_token) VALUES ($1, $2) RETURNING id`, tokensTable)
 
 	if err := r.db.QueryRow(
 		ctx,
 		query,
 		tokens.AccessToken,
 		tokens.RefreshToken,
-	); err != nil {
+	).Scan(&id); err != nil {
+		fmt.Println(err)
 		return er.IncorrectRequestParams.SetCause(fmt.Sprintf("Cause: %s", err))
 
 	}
@@ -69,5 +67,24 @@ func (r *RepositoryTokens) GetTokens(ctx context.Context, refreshToken string) (
 	}
 
 	return &tokens, nil
+
+}
+
+func (r *RepositoryTokens) RemoveTokens(ctx context.Context, refreshToken string) (bool, error) {
+
+	query := fmt.Sprintf(
+		`DELETE FROM %s 
+		WHERE refresh_token = $1`, tokensTable,
+	)
+
+	if err := r.db.QueryRow(
+		ctx,
+		query,
+		refreshToken,
+	); err != nil {
+		return false, er.IncorrectRequest.SetCause(fmt.Sprintf("Cause: %s", err))
+	}
+
+	return true, nil
 
 }

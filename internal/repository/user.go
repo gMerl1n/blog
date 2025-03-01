@@ -33,8 +33,8 @@ func (r *RepositoryUser) CreateUser(ctx context.Context, name, email, hashPasswo
 
 	query := fmt.Sprintf(
 		`INSERT INTO %s (name, email, hash_password)
-	 	 VALUES ($1, $2, $3)
-	 	 RETURNING id`,
+	 	VALUES ($1, $2, $3)
+	 	RETURNING id`,
 		usersTable,
 	)
 
