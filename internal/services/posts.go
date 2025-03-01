@@ -21,8 +21,8 @@ func NewServicePost(repoPost repository.IRepositoryPost, logger *logrus.Logger) 
 	}
 }
 
-func (s *ServicePost) CreatePost(ctx context.Context, title, body string) (int, error) {
-	postID, err := s.repoPost.CreatePost(ctx, title, body)
+func (s *ServicePost) CreatePost(ctx context.Context, title, body string, userID int) (int, error) {
+	postID, err := s.repoPost.CreatePost(ctx, title, body, userID)
 	if err != nil {
 		return 0, err
 	}

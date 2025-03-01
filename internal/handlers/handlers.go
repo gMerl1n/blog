@@ -4,19 +4,22 @@ import (
 	"net/http"
 
 	"github.com/gMerl1n/blog/internal/services"
+	"github.com/gMerl1n/blog/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
-	Services *services.Service
-	logger   *logrus.Logger
+	TokenManager jwt.ITokenManager
+	Services     *services.Service
+	logger       *logrus.Logger
 }
 
-func NewHandler(service *services.Service, logger *logrus.Logger) Handler {
+func NewHandler(service *services.Service, tokenManager jwt.ITokenManager, logger *logrus.Logger) Handler {
 	return Handler{
-		Services: service,
-		logger:   logger,
+		Services:     service,
+		TokenManager: tokenManager,
+		logger:       logger,
 	}
 }
 
@@ -36,10 +39,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		posts := api.Group("/posts")
 		{
-			posts.POST("/", h.CreatePost)
+			posts.POST("/", h.TokenAuthMiddleware, h.CreatePost)
+			posts.PATCH("/", h.TokenAuthMiddleware, h.UpdatePost)
 			posts.GET("/:id", h.GetPostByID)
 			posts.GET("/", h.GetPosts)
-			posts.PATCH("/", h.UpdatePost)
 		}
 		users := api.Group("/users")
 		{

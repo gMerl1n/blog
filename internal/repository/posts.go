@@ -30,12 +30,12 @@ func NewRepositoryPost(db *pgxpool.Pool, logger *logrus.Logger) *RepositoryPost 
 	}
 }
 
-func (r *RepositoryPost) CreatePost(ctx context.Context, title, body string) (int, error) {
+func (r *RepositoryPost) CreatePost(ctx context.Context, title, body string, userID int) (int, error) {
 
 	var postID int
 
 	query := fmt.Sprintf(
-		`INSERT INTO %s (title, body)
+		`INSERT INTO %s (title, body, user_id)
 	 	 VALUES ($1, $2)
 	 	 RETURNING id`,
 		postsTable,
@@ -46,6 +46,7 @@ func (r *RepositoryPost) CreatePost(ctx context.Context, title, body string) (in
 		query,
 		title,
 		body,
+		userID,
 	).Scan(&postID); err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
 			return 0, er.PostIsAlready.SetCause(fmt.Sprintf("Cause: %s", err))

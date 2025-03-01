@@ -11,7 +11,7 @@ import (
 )
 
 type IServicePost interface {
-	CreatePost(ctx context.Context, title, body string) (int, error)
+	CreatePost(ctx context.Context, title, body string, userID int) (int, error)
 	GetPostByID(ctx context.Context, postID int) (*domain.Post, error)
 	GetPosts(ctx context.Context) ([]*domain.Post, error)
 	UpdatePost(ctx context.Context, dataToUpdate requests.UpdatePostRequest) (int, error)

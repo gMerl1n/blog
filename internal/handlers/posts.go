@@ -18,6 +18,12 @@ func (h *Handler) CreatePost(ctx *gin.Context) {
 		return
 	}
 
+	userID, err := h.getUserID(ctx)
+	if err != nil {
+		er.BadResponse(ctx, err)
+		return
+	}
+
 	var input requests.CreatePostRequest
 
 	if err := ctx.BindJSON(&input); err != nil {
@@ -26,7 +32,7 @@ func (h *Handler) CreatePost(ctx *gin.Context) {
 		return
 	}
 
-	postID, err := h.Services.ServicePost.CreatePost(ctx.Request.Context(), input.Title, input.Body)
+	postID, err := h.Services.ServicePost.CreatePost(ctx.Request.Context(), input.Title, input.Body, userID)
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to create user. Error: %s ", err))
 		er.BadResponse(ctx, err)
