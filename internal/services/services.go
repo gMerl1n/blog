@@ -19,7 +19,7 @@ type IServicePost interface {
 
 type IServiceUser interface {
 	CreateUser(ctx context.Context, name, email, password, repeatPassword string) (*jwt.Tokens, error)
-	LoginUser(ctx context.Context, email, password string) (*jwt.Tokens, error)
+	LoginUser(ctx context.Context, email, loginPassword string) (*jwt.Tokens, error)
 }
 
 type Service struct {
@@ -27,9 +27,9 @@ type Service struct {
 	ServiceUser IServiceUser
 }
 
-func NewService(repo *repository.Repository, logger *logrus.Logger) *Service {
+func NewService(repo *repository.Repository, tokenManager jwt.ITokenManager, logger *logrus.Logger) *Service {
 	return &Service{
 		ServicePost: NewServicePost(repo.RepoPost, logger),
-		ServiceUser: NewServiceUser(repo.RepoUser, repo.RepoTokens, logger),
+		ServiceUser: NewServiceUser(repo.RepoUser, repo.RepoTokens, tokenManager, logger),
 	}
 }

@@ -44,6 +44,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		users := api.Group("/users")
 		{
 			users.POST("/", h.CreateUser)
+			users.POST("/login", h.LoginUser)
+
 		}
 	}
 
