@@ -4,3 +4,9 @@ server:
   read_timeout: 60 # in seconds
   write_timeout: 60 # in seconds
   log_level: 4 # Num 4 is INFO level
+
+
+token:
+  jwt_secret: $3cr3t
+  access_tokenTTL: 21600 # 15 days in minutes
+  refresh_tokenTTL: 43200 #30 days in minutes

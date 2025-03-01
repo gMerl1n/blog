@@ -3,16 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/gMerl1n/blog/internal/config"
 	"github.com/gMerl1n/blog/internal/handlers"
 	"github.com/gMerl1n/blog/internal/repository"
 	"github.com/gMerl1n/blog/internal/services"
 	"github.com/gMerl1n/blog/pkg/db"
+	"github.com/gMerl1n/blog/pkg/jwt"
 	"github.com/gMerl1n/blog/pkg/logging"
 	"github.com/gMerl1n/blog/server"
 	"github.com/joho/godotenv"
@@ -38,8 +41,14 @@ func main() {
 
 	}
 
+	tokenManager, err := jwt.NewManager(config.ConfigToken.JWTsecret, time.Duration(config.ConfigToken.AccessTokenTTL), time.Duration(config.ConfigToken.RefreshTokenTTL))
+	if err != nil {
+		log.Fatal("Failed to init token manager")
+		fmt.Println(err)
+	}
+
 	repos := repository.NewRepository(db, logger)
-	services := services.NewService(repos, logger)
+	services := services.NewService(repos, tokenManager, logger)
 	handlers := handlers.NewHandler(services, logger)
 
 	srv := server.NewServer(config.ConfigServer, handlers)

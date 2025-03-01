@@ -23,9 +23,16 @@ type ConfigDB struct {
 	SSLMode  string
 }
 
+type ConfigTokens struct {
+	JWTsecret       string
+	AccessTokenTTL  int
+	RefreshTokenTTL int
+}
+
 type Config struct {
 	ConfigServer *ConfigServer
 	ConfigDB     *ConfigDB
+	ConfigToken  *ConfigTokens
 }
 
 func NewConfig() (*Config, error) {
@@ -49,6 +56,11 @@ func NewConfig() (*Config, error) {
 			Host:     os.Getenv("POSTGRES_HOST"),
 			Port:     os.Getenv("POSTGRES_PORT"),
 			SSLMode:  os.Getenv("SSLMODE"),
+		},
+		&ConfigTokens{
+			JWTsecret:       viper.GetString("token.jwt_secret"),
+			AccessTokenTTL:  viper.GetInt("token.access_token_TTL"),
+			RefreshTokenTTL: viper.GetInt("token.refresh_token_TTL"),
 		},
 	}, nil
 }
