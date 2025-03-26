@@ -34,7 +34,7 @@ func NewServiceUser(repoUser repository.IRepositoyUser, repoTokens repository.IR
 func (s *ServiceUser) CreateUser(ctx context.Context, name, email, password, repeatPassword string) (*jwt.Tokens, error) {
 
 	if password != repeatPassword {
-		return nil, er.IncorrectRequestParams.SetCause("Password and repeated password do not match")
+		return nil, er.IncorrectRequestParams.SetCause("password and repeated password do not match")
 	}
 
 	hashPassword := s.generatePasswordHash(password)

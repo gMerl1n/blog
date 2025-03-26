@@ -29,6 +29,7 @@ func (h *Handler) CreateUser(ctx *gin.Context) {
 	if err != nil {
 		h.logger.Warn(fmt.Sprintf("failed to create user. Error: %s", err))
 		er.BadResponse(ctx, err)
+		return
 	}
 
 	ctx.JSON(http.StatusCreated, tokens)
